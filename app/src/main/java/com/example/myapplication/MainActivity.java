@@ -33,6 +33,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private Thread thread;
     private boolean plotData = true;
 
+    public static float testValue;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,7 +54,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             mSensorManager.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_GAME);
         }
 
-        mChart = (LineChart) findViewById(R.id.chart1);
+        mChart = (LineChart) findViewById(R.id.brain_chart);
 
         // enable description text
         mChart.getDescription().setEnabled(true);
@@ -98,16 +100,20 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         leftAxis.setDrawGridLines(true);
 
         YAxis rightAxis = mChart.getAxisRight();
-        rightAxis.setEnabled(false);
-
-        mChart.getAxisLeft().setDrawGridLines(true);
-        mChart.getXAxis().setDrawGridLines(true);
-        mChart.setDrawBorders(false);
+        //rightAxis.setEnabled(false);
+        rightAxis.setEnabled(true);
+//
+//        mChart.getAxisLeft().setDrawGridLines(true);
+//        mChart.getXAxis().setDrawGridLines(true);
+//        mChart.setDrawBorders(true);
 
         feedMultiple();
 
 
     }
+
+
+
 
     private void addEntry(SensorEvent event) {
 
@@ -123,8 +129,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 data.addDataSet(set);
             }
 
-//            data.addEntry(new Entry(set.getEntryCount(), (float) (Math.random() * 80) + 10f), 0);
-            data.addEntry(new Entry(set.getEntryCount(), event.values[0] + 5), 0);
+//         data.addEntry(new Entry(set.getEntryCount(), (float) (Math.random() * 80) + 10f), 0);
+           data.addEntry(new Entry(set.getEntryCount(), event.values[0] + 5), 0);
             data.notifyDataChanged();
 
             // let the chart know it's data has changed
@@ -167,7 +173,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 while (true){
                     plotData = true;
                     try {
-                        Thread.sleep(100);
+                        Thread.sleep(150);
                     } catch (InterruptedException e) {
                         // TODO Auto-generated catch block
                         e.printStackTrace();
@@ -177,7 +183,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         });
 
         thread.start();
+
     }
+
 
     @Override
     protected void onPause() {
@@ -197,6 +205,11 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     @Override
     public final void onSensorChanged(SensorEvent event) {
+        Log.d(TAG, "onSensorChanged: Sensor valueX:" + event.values[0]);
+        Log.d(TAG, "onSensorChanged: Sensor valueY:" + event.values[1]);
+        Log.d(TAG, "onSensorChanged: Sensor valueZ:" + event.values[2]);
+
+        testValue = event.values[0];
         if(plotData){
             addEntry(event);
             plotData = false;
